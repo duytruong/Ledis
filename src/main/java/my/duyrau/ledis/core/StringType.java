@@ -28,6 +28,9 @@ public class StringType implements Command {
 
     @Override
     public String execute(Parser parser) {
+        if (!parser.getError().equals("")) {
+            return parser.getError();
+        }
         if (parser.getCommandName().equalsIgnoreCase(Constant.GET)) {
             return get(parser.getKey());
         } else {

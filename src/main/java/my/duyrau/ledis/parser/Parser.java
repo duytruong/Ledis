@@ -1,5 +1,7 @@
 package my.duyrau.ledis.parser;
 
+import my.duyrau.ledis.util.CommandUtil;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +19,8 @@ public class Parser {
 
     private String[] remainingArgumentsFromIndexOne;
 
+    private String error = "";
+
     private int len;
 
     private String[] tokenize(String str) {
@@ -33,8 +37,40 @@ public class Parser {
         return result.toArray(new String[0]);
     }
 
+    private String[] tokenize2(String str) {
+        int secondSpaceIdx = str.indexOf(" ", str.indexOf(" ") + 1);
+        int secondDoubleQuoteIdx = str.indexOf("\"", str.indexOf("\"") + 1);
+
+        // only one space in commad => GET
+        if (secondSpaceIdx == -1) {
+            return str.split(CommandUtil.DELIMITER);
+        } // two spaces, doesn't contain (") => SET
+        else if (!str.contains("\"")) {
+            return str.split(CommandUtil.DELIMITER);
+        } // two spaces => SET, but contains only one (") => Invalid argument
+        else if (secondDoubleQuoteIdx == -1) {
+            error = "Invalid argument(s)";
+            return str.split(CommandUtil.DELIMITER);
+        } // SET and value is contained by quotes, value can has quotes inside.
+        else {
+            String nameAndKey = str.substring(0, secondSpaceIdx);
+
+            // remove the first and the last (") of the string.
+            String value = str.substring(secondSpaceIdx + 2, str.length() - 1);
+
+            String[] tmpToken = nameAndKey.split(CommandUtil.DELIMITER);
+            int tmpTokenLen = tmpToken.length;
+            String[] result = new String[tmpTokenLen + 1];
+            for (int i = 0; i < tmpTokenLen; i++) {
+                result[i] = tmpToken[i];
+            }
+            result[tmpTokenLen] = value;
+            return result;
+        }
+    }
+
     public void parse(String command) {
-        tokens = tokenize(command);
+        tokens = tokenize2(command);
         len = tokens.length;
         if (len > 1) {
             remainingArgumentsFromIndexOne = Arrays.copyOfRange(tokens, 1, tokens.length);
@@ -58,6 +94,10 @@ public class Parser {
 
     public String[] getRemainingArgFromOne() {
         return remainingArgumentsFromIndexOne;
+    }
+
+    public String getError() {
+        return error;
     }
 
     public int getLength() {
