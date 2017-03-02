@@ -169,31 +169,4 @@ public class Deque<Item> implements Iterable<Item> {
     public Iterator<Item> iterator() {
         return new DoubleLinkedListIterator();
     }
-
-    public static void main(String[] args) {
-        Deque<Integer> deque = new Deque<>();
-        System.out.println("The deque is empty: " + deque.isEmpty());
-        System.out.println("Size: " + deque.size());
-
-        deque.addFirst(6);
-        deque.addFirst(3);
-        Integer i0 = deque.removeFirst();
-        System.out.println("Removed = " + i0);
-        deque.addLast(5);
-        deque.addLast(2);
-        deque.addFirst(7);
-        System.out.println("Now, head = " + deque.head.data);
-        System.out.println("Now, tail = " + deque.tail.data);
-        Integer i1 = deque.removeLast();
-        System.out.println("Removed = " + i1);
-        System.out.println("Now, tail = " + deque.tail.data);
-
-        for (Integer item : deque) {
-            System.out.print(item + " ");
-        }
-        System.out.print("\nSize: " + deque.size());
-        System.out.println("\nThe deque is empty: " + deque.isEmpty());
-
-        System.out.println(deque.print(11, 1));
-    }
 }

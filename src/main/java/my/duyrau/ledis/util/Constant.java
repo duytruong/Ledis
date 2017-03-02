@@ -30,4 +30,8 @@ public class Constant {
     public static final String ERROR_COMMAND_NOT_FOUND = ERROR_PREFIX + ": command not found";
     public static final String ERROR_UNKNOWN_COMMAND = ERROR_PREFIX + ": Unknown command";
     public static final String ERROR_INVALID_ARGUMENT = "Invalid argument(s)";
+
+    public static final String STRING_TYPE = "STRING_TYPE";
+    public static final String SET_TYPE = "SET_TYPE";
+    public static final String LIST_TYPE = "LIST_TYPE";
 }

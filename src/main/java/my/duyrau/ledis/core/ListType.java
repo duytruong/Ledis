@@ -17,7 +17,7 @@ public class ListType implements Command {
     // data structure for list
     private Deque<String> deque;
 
-    public int llen(String key) {
+    private int llen(String key) {
         if (CommandUtil.valueIsNotList(key)) {
             return -1;
         }
@@ -28,7 +28,7 @@ public class ListType implements Command {
         }
     }
 
-    public int rpush(String key, String[] values) {
+    private int rpush(String key, String[] values) {
         if (CommandUtil.valueIsNotList(key)) {
             return -1;
         } else {
@@ -48,7 +48,7 @@ public class ListType implements Command {
         }
     }
 
-    public String lpop(String key) {
+    private String lpop(String key) {
         if (table.containsKey(key)) {
             deque = table.get(key);
             String result = deque.removeFirst();
@@ -58,7 +58,7 @@ public class ListType implements Command {
         }
     }
 
-    public String rpop(String key) {
+    private String rpop(String key) {
         if (table.containsKey(key)) {
             deque = table.get(key);
             String result = deque.removeLast();
@@ -68,7 +68,7 @@ public class ListType implements Command {
         }
     }
 
-    public String lrange(String key, int start, int stop) {
+    private String lrange(String key, int start, int stop) {
         if (CommandUtil.valueIsNotList(key)) {
             return Constant.WRONG_KIND_OF_VALUE;
         }
@@ -82,22 +82,26 @@ public class ListType implements Command {
 
     @Override
     public String execute(Parser parser) {
-        if (!parser.getError().equals("")) {
-            return parser.getError();
-        }
-        if (Constant.RPUSH.equalsIgnoreCase(parser.getCommandName())) {
-            int result = rpush(parser.getKey(), parser.getRemainingArgFromTwo());
-            return result == -1 ? Constant.WRONG_KIND_OF_VALUE : String.valueOf(result);
-        } else if (Constant.LPOP.equalsIgnoreCase(parser.getCommandName())) {
-            return lpop(parser.getKey());
-        } else if (Constant.LRANGE.equalsIgnoreCase(parser.getCommandName())) {
-            String[] values = parser.getRemainingArgFromTwo();
-            return lrange(parser.getKey(), Integer.parseInt(values[0]), Integer.parseInt(values[1]));
-        } else if (Constant.RPOP.equalsIgnoreCase(parser.getCommandName())) {
-            return rpop(parser.getKey());
+        if (parser != null) {
+            if (!parser.getError().equals("")) {
+                return parser.getError();
+            }
+            if (Constant.RPUSH.equalsIgnoreCase(parser.getCommandName())) {
+                int result = rpush(parser.getKey(), parser.getRemainingArgFromTwo());
+                return result == -1 ? Constant.WRONG_KIND_OF_VALUE : String.valueOf(result);
+            } else if (Constant.LPOP.equalsIgnoreCase(parser.getCommandName())) {
+                return lpop(parser.getKey());
+            } else if (Constant.LRANGE.equalsIgnoreCase(parser.getCommandName())) {
+                String[] values = parser.getRemainingArgFromTwo();
+                return lrange(parser.getKey(), Integer.parseInt(values[0]), Integer.parseInt(values[1]));
+            } else if (Constant.RPOP.equalsIgnoreCase(parser.getCommandName())) {
+                return rpop(parser.getKey());
+            } else {
+                int result = llen(parser.getKey());
+                return result == -1 ? Constant.WRONG_KIND_OF_VALUE : String.valueOf(result);
+            }
         } else {
-            int result = llen(parser.getKey());
-            return result == -1 ? Constant.WRONG_KIND_OF_VALUE : String.valueOf(result);
+            return Constant.ERROR_COMMAND_NOT_FOUND;
         }
     }
 }

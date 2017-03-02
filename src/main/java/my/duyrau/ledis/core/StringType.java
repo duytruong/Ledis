@@ -12,26 +12,30 @@ public class StringType implements Command {
 
     public static final HashMap<String, String> table = new HashMap<>();
 
-    public String set(String key, String value) {
+    private String set(String key, String value) {
         table.put(key, value);
         return "OK";
     }
 
-    public String get(String key) {
+    private String get(String key) {
         String result = table.get(key);
         return result == null ? "(nil)" : result;
     }
 
     @Override
     public String execute(Parser parser) {
-        if (!parser.getError().equals("")) {
-            return parser.getError();
-        }
-        if (parser.getCommandName().equalsIgnoreCase(Constant.GET)) {
-            return get(parser.getKey());
+        if (parser != null) {
+            if (!parser.getError().equals("")) {
+                return parser.getError();
+            }
+            if (parser.getCommandName().equalsIgnoreCase(Constant.GET)) {
+                return get(parser.getKey());
+            } else {
+                String[] value = parser.getRemainingArgFromTwo();
+                return set(parser.getKey(), value[0]);
+            }
         } else {
-            String[] value = parser.getRemainingArgFromTwo();
-            return set(parser.getKey(), value[0]);
+            return Constant.ERROR_COMMAND_NOT_FOUND;
         }
     }
 }

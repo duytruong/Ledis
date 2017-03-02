@@ -2,6 +2,7 @@ package my.duyrau.ledis.controller;
 
 import my.duyrau.ledis.core.Command;
 import my.duyrau.ledis.core.ListType;
+import my.duyrau.ledis.core.SetType;
 import my.duyrau.ledis.core.StringType;
 import my.duyrau.ledis.json.CommandDTO;
 import my.duyrau.ledis.parser.Parser;
@@ -12,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by duyrau on 2/28/17.
  */
@@ -19,11 +23,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class MainController {
 
-    private Command commander;
+    private static final Map<String, Command> dataTypes;
 
-    private StringType stringType = new StringType();
-
-    private ListType listType = new ListType();
+    static {
+        dataTypes = new HashMap<>();
+        dataTypes.put(Constant.STRING_TYPE, new StringType());
+        dataTypes.put(Constant.LIST_TYPE, new ListType());
+        dataTypes.put(Constant.SET_TYPE, new SetType());
+    }
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
     public String executeCommand(@RequestBody CommandDTO commandDTO) {
@@ -35,13 +42,16 @@ public class MainController {
         parser.parse(command);
 
         String commandName = parser.getCommandName().toUpperCase();
+        String type;
         if (CommandUtil.STRING_COMMANDS.contains(commandName)) {
-            commander = stringType;
-            return commander.execute(parser);
+            type = Constant.STRING_TYPE;
         } else if (CommandUtil.LIST_COMMANDS.contains(commandName)) {
-            commander = listType;
-            return commander.execute(parser);
+            type = Constant.LIST_TYPE;
+        } else if (CommandUtil.SET_COMMANDS.contains(commandName)) {
+            type = Constant.SET_TYPE;
+        } else {
+            return Constant.ERROR_UNKNOWN_COMMAND + commandName;
         }
-        return Constant.ERROR_UNKNOWN_COMMAND + commandName;
+        return dataTypes.get(type).execute(parser);
     }
 }
