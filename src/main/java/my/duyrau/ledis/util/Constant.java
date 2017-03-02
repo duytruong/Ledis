@@ -19,4 +19,15 @@ public class Constant {
     public static final String SMEMBERS = "SMEMBERS";
     public static final String SREM = "SREM";
     public static final String SINTER = "SINTER";
+
+    public static final String EMPTY_STRING = "";
+    public static final String ERROR_PREFIX = "ERROR";
+    public static final String DELIMITER = " ";
+    public static final String DOUBLE_QUOTES = "\"";
+    public static final String EMPTY_LIST_OR_SET = "(Empty list or set)";
+    public static final String WRONG_KIND_OF_VALUE = "WRONGTYPE Operation against a key holding the wrong kind of value";
+    public static final String NIL = "(nil)";
+    public static final String ERROR_COMMAND_NOT_FOUND = ERROR_PREFIX + ": command not found";
+    public static final String ERROR_UNKNOWN_COMMAND = ERROR_PREFIX + ": Unknown command";
+    public static final String ERROR_INVALID_ARGUMENT = "Invalid argument(s)";
 }

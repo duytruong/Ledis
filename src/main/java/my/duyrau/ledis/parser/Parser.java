@@ -1,6 +1,6 @@
 package my.duyrau.ledis.parser;
 
-import my.duyrau.ledis.util.CommandUtil;
+import my.duyrau.ledis.util.Constant;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,20 +37,20 @@ public class Parser {
         return result.toArray(new String[0]);
     }
 
-    private String[] tokenize2(String str) {
-        int secondSpaceIdx = str.indexOf(" ", str.indexOf(" ") + 1);
-        int secondDoubleQuoteIdx = str.indexOf("\"", str.indexOf("\"") + 1);
+    private String[] tokenizeWithHTML(String str) {
+        int secondSpaceIdx = str.indexOf(Constant.DELIMITER, str.indexOf(Constant.DELIMITER) + 1);
+        int secondDoubleQuoteIdx = str.indexOf(Constant.DOUBLE_QUOTES, str.indexOf(Constant.DOUBLE_QUOTES) + 1);
 
         // only one space in commad => GET
         if (secondSpaceIdx == -1) {
-            return str.split(CommandUtil.DELIMITER);
+            return str.split(Constant.DELIMITER);
         } // two spaces, doesn't contain (") => SET
         else if (!str.contains("\"")) {
-            return str.split(CommandUtil.DELIMITER);
+            return str.split(Constant.DELIMITER);
         } // two spaces => SET, but contains only one (") => Invalid argument
         else if (secondDoubleQuoteIdx == -1) {
-            error = "Invalid argument(s)";
-            return str.split(CommandUtil.DELIMITER);
+            error = Constant.ERROR_INVALID_ARGUMENT;
+            return str.split(Constant.DELIMITER);
         } // SET and value is contained by quotes, value can has quotes inside.
         else {
             String nameAndKey = str.substring(0, secondSpaceIdx);
@@ -58,7 +58,7 @@ public class Parser {
             // remove the first and the last (") of the string.
             String value = str.substring(secondSpaceIdx + 2, str.length() - 1);
 
-            String[] tmpToken = nameAndKey.split(CommandUtil.DELIMITER);
+            String[] tmpToken = nameAndKey.split(Constant.DELIMITER);
             int tmpTokenLen = tmpToken.length;
             String[] result = new String[tmpTokenLen + 1];
             for (int i = 0; i < tmpTokenLen; i++) {
@@ -69,8 +69,22 @@ public class Parser {
         }
     }
 
+    private String extractCommandName(String cmd) {
+        int spaceIdx = cmd.indexOf(Constant.DELIMITER);
+        if (spaceIdx == -1) {
+            return cmd;
+        } else {
+            return cmd.substring(0, spaceIdx);
+        }
+    }
+
     public void parse(String command) {
-        tokens = tokenize2(command);
+        String cmdName = extractCommandName(command).toUpperCase();
+        if (Constant.GET.equals(cmdName) || Constant.SET.equals(cmdName)) {
+            tokens = tokenizeWithHTML(command);
+        } else {
+            tokens = tokenize(command);
+        }
         len = tokens.length;
         if (len > 1) {
             remainingArgumentsFromIndexOne = Arrays.copyOfRange(tokens, 1, tokens.length);

@@ -3,18 +3,14 @@ package my.duyrau.ledis.core;
 import my.duyrau.ledis.parser.Parser;
 import my.duyrau.ledis.util.Constant;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 /**
  * Created by duyrau on 3/1/17.
  */
 public class StringType implements Command {
 
-    private Hashtable<String, String> table;
-
-    public StringType() {
-        table = new Hashtable<>();
-    }
+    public static final HashMap<String, String> table = new HashMap<>();
 
     public String set(String key, String value) {
         table.put(key, value);
