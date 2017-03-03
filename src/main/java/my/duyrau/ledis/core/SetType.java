@@ -3,7 +3,6 @@ package my.duyrau.ledis.core;
 import my.duyrau.ledis.parser.Parser;
 import my.duyrau.ledis.util.Constant;
 
-import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -11,24 +10,22 @@ import java.util.HashSet;
  */
 public class SetType implements Command {
 
-    public static final HashMap<String, HashSet<String>> table = new HashMap<>();
+//    public static final HashMap<String, HashSet<String>> dataStore = new HashMap<>();
+
+    private DataStore dataStore = new DataStore();
 
     private HashSet<String> set;
 
-    private boolean keyDoesNotContainSET(String key) {
-        return StringType.table.containsKey(key) || ListType.table.containsKey(key);
-    }
-
     private int sadd(String key, String[] values) {
-        if (keyDoesNotContainSET(key)) {
+        if (dataStore.valueIsNotSet(key)) {
             return -1;
         }
         int addedItems = 0;
-        if (table.containsKey(key)) {
-            set = table.get(key);
+        if (dataStore.containsKey(key)) {
+            set = (HashSet<String>) dataStore.get(key);
         } else {
             set = new HashSet<>();
-            table.put(key, set);
+            dataStore.put(key, set);
         }
         for (int i = 0; i < values.length; i++) {
             if (set.add(values[i])) {
@@ -39,28 +36,34 @@ public class SetType implements Command {
     }
 
     private int scard(String key) {
-        if (keyDoesNotContainSET(key)) {
+        if (dataStore.valueIsNotSet(key)) {
             return -1;
         }
-        if (table.containsKey(key)) {
-            return table.get(key).size();
+        if (dataStore.containsKey(key)) {
+            return ((HashSet<String>)dataStore.get(key)).size();
         } else {
             return 0;
         }
     }
 
     private String smembers(String key) {
-        if (table.containsKey(key)) {
-            return table.get(key).toString();
+        if (dataStore.valueIsNotSet(key)) {
+            return Constant.WRONG_KIND_OF_VALUE;
+        }
+        if (dataStore.containsKey(key)) {
+            return dataStore.get(key).toString();
         } else {
             return Constant.EMPTY_LIST_OR_SET;
         }
     }
 
     private int srem(String key, String[] values) {
-        if (table.containsKey(key)) {
+        if (dataStore.valueIsNotSet(key)) {
+            return -1;
+        }
+        if (dataStore.containsKey(key)) {
             int removedItems = 0;
-            set = table.get(key);
+            set = (HashSet<String>)dataStore.get(key);
             for (int i = 0; i < values.length; i++) {
                 if (set.remove(values[i])) {
                     removedItems++;
@@ -74,7 +77,7 @@ public class SetType implements Command {
 
     private boolean oneOfKeysIsNotExist(String[] keys) {
         for (int i = 0; i < keys.length; i++) {
-            if (!table.containsKey(keys[i])) {
+            if (!dataStore.containsKey(keys[i])) {
                 return true;
             }
         }
@@ -86,9 +89,9 @@ public class SetType implements Command {
             return Constant.EMPTY_LIST_OR_SET;
         } else {
             HashSet<String> commons = new HashSet<>();
-            commons.addAll(table.get(keys[0]));
+            commons.addAll((HashSet<String>)dataStore.get(keys[0]));
             for (int i = 1; i < keys.length; i++) {
-                commons.retainAll(table.get(keys[i]));
+                commons.retainAll((HashSet<String>)dataStore.get(keys[i]));
             }
             return commons.toString();
         }
@@ -110,7 +113,7 @@ public class SetType implements Command {
                 return smembers(parser.getKey());
             } else if (Constant.SREM.equalsIgnoreCase(parser.getCommandName())) {
                 int result = srem(parser.getKey(), parser.getRemainingArgFromTwo());
-                return String.valueOf(result);
+                return result == -1 ? Constant.WRONG_KIND_OF_VALUE : String.valueOf(result);
             } else {
                 return sinter(parser.getRemainingArgFromOne());
             }

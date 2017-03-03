@@ -19,7 +19,7 @@ public class Parser {
 
     private String[] remainingArgumentsFromIndexOne;
 
-    private String error = "";
+    private String error = Constant.NO_PARSING_ERROR;
 
     private int len;
 

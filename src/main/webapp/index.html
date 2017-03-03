@@ -6,7 +6,7 @@
 </head>
 <body>
   <p>Type command here, enter to send</p>
-  <input id="cmd" type="text" onkeypress="onEnter()">
+  <input id="cmd" type="text" onkeypress="onEnter()" autofocus>
   <p id="output"></p>
 
   <script>
@@ -20,7 +20,7 @@
       var keyCode = e.keyCode || e.which;
       if (keyCode == '13'){
         var command = { "command": cmdInput.value };
-        xhr.open("POST", "https://ledis.herokuapp.com", true);
+        xhr.open("POST", "http://localhost:8080", true);
         xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
         xhr.send(JSON.stringify(command));
         return false;

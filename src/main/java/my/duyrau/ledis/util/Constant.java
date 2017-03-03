@@ -34,4 +34,7 @@ public class Constant {
     public static final String STRING_TYPE = "STRING_TYPE";
     public static final String SET_TYPE = "SET_TYPE";
     public static final String LIST_TYPE = "LIST_TYPE";
+
+    public static final String NO_PARSING_ERROR = "";
+    public static final String RESPONSE_OK = "OK";
 }

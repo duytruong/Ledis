@@ -2,38 +2,37 @@ package my.duyrau.ledis.core;
 
 import my.duyrau.ledis.lib.Deque;
 import my.duyrau.ledis.parser.Parser;
-import my.duyrau.ledis.util.CommandUtil;
 import my.duyrau.ledis.util.Constant;
-
-import java.util.HashMap;
 
 /**
  * Created by duyrau on 3/1/17.
  */
 public class ListType implements Command {
 
-    public static final HashMap<String, Deque<String>> table = new HashMap<>();
+//    public static final HashMap<String, Deque<String>> dataStore = new HashMap<>();
 
+    private DataStore dataStore = new DataStore();
+    
     // data structure for list
     private Deque<String> deque;
 
     private int llen(String key) {
-        if (CommandUtil.valueIsNotList(key)) {
+        if (dataStore.valueIsNotList(key)) {
             return -1;
         }
-        if (table.containsKey(key)) {
-            return table.get(key).size();
+        if (dataStore.containsKey(key)) {
+            return ((Deque<String>)dataStore.get(key)).size();
         } else {
             return 0;
         }
     }
 
     private int rpush(String key, String[] values) {
-        if (CommandUtil.valueIsNotList(key)) {
+        if (dataStore.valueIsNotList(key)) {
             return -1;
         } else {
-            if (table.containsKey(key)) {
-                deque = table.get(key);
+            if (dataStore.containsKey(key)) {
+                deque = (Deque<String>)dataStore.get(key);
                 for (String value : values) {
                     deque.addLast(value);
                 }
@@ -42,15 +41,15 @@ public class ListType implements Command {
                 for (String value : values) {
                     deque.addLast(value);
                 }
-                table.put(key, deque);
+                dataStore.put(key, deque);
             }
             return deque.size();
         }
     }
 
     private String lpop(String key) {
-        if (table.containsKey(key)) {
-            deque = table.get(key);
+        if (dataStore.containsKey(key)) {
+            deque = (Deque<String>)dataStore.get(key);
             String result = deque.removeFirst();
             return result == null ? Constant.NIL : result;
         } else {
@@ -59,8 +58,8 @@ public class ListType implements Command {
     }
 
     private String rpop(String key) {
-        if (table.containsKey(key)) {
-            deque = table.get(key);
+        if (dataStore.containsKey(key)) {
+            deque = (Deque<String>)dataStore.get(key);
             String result = deque.removeLast();
             return result == null ? Constant.NIL : result;
         } else {
@@ -69,11 +68,11 @@ public class ListType implements Command {
     }
 
     private String lrange(String key, int start, int stop) {
-        if (CommandUtil.valueIsNotList(key)) {
+        if (dataStore.valueIsNotList(key)) {
             return Constant.WRONG_KIND_OF_VALUE;
         }
-        if (table.containsKey(key)) {
-            deque = table.get(key);
+        if (dataStore.containsKey(key)) {
+            deque = (Deque<String>)dataStore.get(key);
             return deque.print(start, stop);
         } else {
             return Constant.EMPTY_LIST_OR_SET;

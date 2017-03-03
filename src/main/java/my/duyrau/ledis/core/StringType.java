@@ -3,29 +3,29 @@ package my.duyrau.ledis.core;
 import my.duyrau.ledis.parser.Parser;
 import my.duyrau.ledis.util.Constant;
 
-import java.util.HashMap;
-
 /**
  * Created by duyrau on 3/1/17.
  */
 public class StringType implements Command {
 
-    public static final HashMap<String, String> table = new HashMap<>();
+//    public static final HashMap<String, String> table = new HashMap<>();
+
+    private DataStore dataStore = new DataStore();
 
     private String set(String key, String value) {
-        table.put(key, value);
-        return "OK";
+        dataStore.put(key, value);
+        return Constant.RESPONSE_OK;
     }
 
     private String get(String key) {
-        String result = table.get(key);
-        return result == null ? "(nil)" : result;
+        String result = (String) dataStore.get(key);
+        return result == null ? Constant.NIL : result;
     }
 
     @Override
     public String execute(Parser parser) {
         if (parser != null) {
-            if (!parser.getError().equals("")) {
+            if (!parser.getError().equals(Constant.NO_PARSING_ERROR)) {
                 return parser.getError();
             }
             if (parser.getCommandName().equalsIgnoreCase(Constant.GET)) {
