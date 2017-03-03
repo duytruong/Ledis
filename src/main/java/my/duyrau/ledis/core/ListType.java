@@ -9,8 +9,6 @@ import my.duyrau.ledis.util.Constant;
  */
 public class ListType implements Command {
 
-//    public static final HashMap<String, Deque<String>> dataStore = new HashMap<>();
-
     private DataStore dataStore = new DataStore();
     
     // data structure for list
@@ -21,7 +19,8 @@ public class ListType implements Command {
             return -1;
         }
         if (dataStore.containsKey(key)) {
-            return ((Deque<String>)dataStore.get(key)).size();
+            deque = (Deque<String>)dataStore.get(key);
+            return deque == null ? Constant.OUT_OF_TIME : deque.size();
         } else {
             return 0;
         }
@@ -48,8 +47,7 @@ public class ListType implements Command {
     }
 
     private String lpop(String key) {
-        if (dataStore.containsKey(key)) {
-            deque = (Deque<String>)dataStore.get(key);
+        if (dataStore.containsKey(key) && ((deque = (Deque<String>)dataStore.get(key)) != null)) {
             String result = deque.removeFirst();
             return result == null ? Constant.NIL : result;
         } else {
@@ -58,8 +56,7 @@ public class ListType implements Command {
     }
 
     private String rpop(String key) {
-        if (dataStore.containsKey(key)) {
-            deque = (Deque<String>)dataStore.get(key);
+        if (dataStore.containsKey(key) && (deque = (Deque<String>)dataStore.get(key)) != null) {
             String result = deque.removeLast();
             return result == null ? Constant.NIL : result;
         } else {
@@ -71,8 +68,7 @@ public class ListType implements Command {
         if (dataStore.valueIsNotList(key)) {
             return Constant.WRONG_KIND_OF_VALUE;
         }
-        if (dataStore.containsKey(key)) {
-            deque = (Deque<String>)dataStore.get(key);
+        if (dataStore.containsKey(key) && (deque = (Deque<String>)dataStore.get(key)) != null) {
             return deque.print(start, stop);
         } else {
             return Constant.EMPTY_LIST_OR_SET;
@@ -82,7 +78,7 @@ public class ListType implements Command {
     @Override
     public String execute(Parser parser) {
         if (parser != null) {
-            if (!parser.getError().equals("")) {
+            if (!parser.getError().equals(Constant.NO_PARSING_ERROR)) {
                 return parser.getError();
             }
             if (Constant.RPUSH.equalsIgnoreCase(parser.getCommandName())) {

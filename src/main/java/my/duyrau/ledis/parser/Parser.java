@@ -102,10 +102,20 @@ public class Parser {
         return tokens[1];
     }
 
+    /**
+     * Get list of values in commands that have key and values (return values from 2nd index of array)
+     * RPUSH key 0 1 2 => return [0, 1, 2]
+     * @return array of values
+     */
     public String[] getRemainingArgFromTwo() {
         return remainingArgumentsFromIndexTwo;
     }
 
+    /**
+     * Get list of values in commands that have list of keys (return values from 1nd index of array)
+     * SINTER set1 set2 set3 => return [set1, set2, set3]
+     * @return array of values
+     */
     public String[] getRemainingArgFromOne() {
         return remainingArgumentsFromIndexOne;
     }

@@ -39,8 +39,8 @@ public class SetType implements Command {
         if (dataStore.valueIsNotSet(key)) {
             return -1;
         }
-        if (dataStore.containsKey(key)) {
-            return ((HashSet<String>)dataStore.get(key)).size();
+        if (dataStore.containsKey(key) && (set = (HashSet<String>)dataStore.get(key)) != null) {
+            return set.size();
         } else {
             return 0;
         }
@@ -50,7 +50,7 @@ public class SetType implements Command {
         if (dataStore.valueIsNotSet(key)) {
             return Constant.WRONG_KIND_OF_VALUE;
         }
-        if (dataStore.containsKey(key)) {
+        if (dataStore.containsKey(key) && dataStore.get(key) != null) {
             return dataStore.get(key).toString();
         } else {
             return Constant.EMPTY_LIST_OR_SET;
@@ -61,9 +61,8 @@ public class SetType implements Command {
         if (dataStore.valueIsNotSet(key)) {
             return -1;
         }
-        if (dataStore.containsKey(key)) {
+        if (dataStore.containsKey(key) && (set = (HashSet<String>)dataStore.get(key)) != null) {
             int removedItems = 0;
-            set = (HashSet<String>)dataStore.get(key);
             for (int i = 0; i < values.length; i++) {
                 if (set.remove(values[i])) {
                     removedItems++;
@@ -84,7 +83,19 @@ public class SetType implements Command {
         return false;
     }
 
+    private boolean oneOfKeysIsNotSet(String[] keys) {
+        for (int i = 0; i < keys.length; i++) {
+            if (dataStore.valueIsNotSet(keys[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private String sinter(String[] keys) {
+        if (oneOfKeysIsNotSet(keys)) {
+            return Constant.WRONG_KIND_OF_VALUE;
+        }
         if (oneOfKeysIsNotExist(keys)) {
             return Constant.EMPTY_LIST_OR_SET;
         } else {
@@ -100,7 +111,7 @@ public class SetType implements Command {
     @Override
     public String execute(Parser parser) {
         if (parser != null) {
-            if (!parser.getError().equals("")) {
+            if (!parser.getError().equals(Constant.NO_PARSING_ERROR)) {
                 return parser.getError();
             }
             if (Constant.SADD.equalsIgnoreCase(parser.getCommandName())) {

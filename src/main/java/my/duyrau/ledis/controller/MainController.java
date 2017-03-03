@@ -1,9 +1,6 @@
 package my.duyrau.ledis.controller;
 
-import my.duyrau.ledis.core.Command;
-import my.duyrau.ledis.core.ListType;
-import my.duyrau.ledis.core.SetType;
-import my.duyrau.ledis.core.StringType;
+import my.duyrau.ledis.core.*;
 import my.duyrau.ledis.json.CommandDTO;
 import my.duyrau.ledis.parser.Parser;
 import my.duyrau.ledis.util.CommandUtil;
@@ -30,6 +27,7 @@ public class MainController {
         dataTypes.put(Constant.STRING_TYPE, new StringType());
         dataTypes.put(Constant.LIST_TYPE, new ListType());
         dataTypes.put(Constant.SET_TYPE, new SetType());
+        dataTypes.put(Constant.DATA_EXPIRATION_TYPE, new KeyOperator());
     }
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
@@ -49,6 +47,8 @@ public class MainController {
             type = Constant.LIST_TYPE;
         } else if (CommandUtil.SET_COMMANDS.contains(commandName)) {
             type = Constant.SET_TYPE;
+        } else if (CommandUtil.DATA_EXPIRATION_COMMANDS.contains(commandName)) {
+            type = Constant.DATA_EXPIRATION_TYPE;
         } else {
             return Constant.ERROR_UNKNOWN_COMMAND + commandName;
         }

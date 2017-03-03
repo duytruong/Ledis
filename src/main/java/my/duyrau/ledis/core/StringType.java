@@ -18,8 +18,11 @@ public class StringType implements Command {
     }
 
     private String get(String key) {
-        String result = (String) dataStore.get(key);
-        return result == null ? Constant.NIL : result;
+        if (dataStore.containsKey(key)) {
+            String result = (String) dataStore.get(key);
+            return result == null ? Constant.NIL : result;
+        }
+        return Constant.NIL;
     }
 
     @Override
